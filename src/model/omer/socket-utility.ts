@@ -7,5 +7,6 @@ export class OmerSocketUtility {
 
     public sendSocketMessage(jsonData: string) {
         this.socket.send(jsonData);
+        console.log('Noder Message sent: ' + jsonData);
     }
 }
