@@ -54,6 +54,7 @@ import { WebSocketStream } from '../websockets/websocket-stream';
 import { RTCConnection } from '../webrtc/rtc-connection';
 import { RTCDataChannel } from '../webrtc/rtc-data-channel';
 import { RTCMediaTrack } from '../webrtc/rtc-media-track';
+import { OmerSocketUtility } from '../omer/socket-utility';
 
 // Would be nice to magically infer this from the overloaded on() type, but sadly:
 // https://github.com/Microsoft/TypeScript/issues/24275#issuecomment-390701982
@@ -157,7 +158,8 @@ export class EventsStore {
     constructor(
         private proxyStore: ProxyStore,
         private apiStore: ApiStore,
-        private rulesStore: RulesStore
+        private rulesStore: RulesStore,
+        private socketSender: OmerSocketUtility = new OmerSocketUtility(45458)
     ) { }
 
     readonly initialized = lazyObservablePromise(async () => {
@@ -169,8 +171,7 @@ export class EventsStore {
 
         mockttpEventTypes.forEach(<T extends MockttpEventType>(eventName: T) => {
             this.proxyStore.onMockttpEvent(eventName, ((eventData: EventTypesMap[T]) => {
-                console.log('Noder')
-                console.log(eventData)
+                this.socketSender.sendSocketMessage(JSON.stringify(eventData));
                 if (this.isPaused) return;
                 this.eventQueue.push({ type: eventName, event: eventData } as any);
                 this.queueEventFlush();
@@ -185,7 +186,7 @@ export class EventsStore {
             }));
         });
 
-        console.log('Events store initialized noder check');
+        console.log('Events store initialized');
     });
 
     @observable
