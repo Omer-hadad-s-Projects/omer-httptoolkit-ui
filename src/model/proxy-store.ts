@@ -173,7 +173,8 @@ export class ProxyStore {
             http: any,
             webrtc: any
         }>({
-            adminServerUrl: 'http://127.0.0.1:45456'
+            // Use same-origin admin endpoint; Caddy will proxy /admin to the server admin port
+            adminServerUrl: '/admin'
         });
 
         // These are persisted initially, so we know if the user updates them that we

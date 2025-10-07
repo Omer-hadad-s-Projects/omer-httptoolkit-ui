@@ -31,7 +31,7 @@ export class GraphQLApiClient {
     ) {}
 
     async graphql<T extends {}>(operationName: string, query: string, variables: unknown) {
-        const response = await fetch('http://127.0.0.1:45457', {
+    const response = await fetch('/api', {
             method: 'POST',
             headers: {
                 ...(this.authToken ? {
