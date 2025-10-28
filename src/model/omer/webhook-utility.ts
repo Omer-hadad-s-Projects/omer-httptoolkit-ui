@@ -1,5 +1,5 @@
 export class OmerWebhookUtility {
-    private baseUrl: string = process.env.WEBHOOK_BASE_URL || 'http://localhost:45459';
+    private baseUrl: string = (window as any).WEBHOOK_BASE_URL || process.env.WEBHOOK_BASE_URL || 'http://localhost:45459';
     private port: number;
 
     public constructor(port: number) {
