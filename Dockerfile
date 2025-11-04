@@ -10,6 +10,7 @@ COPY ./Caddyfile /etc/caddy/Caddyfile
 
 # Create a startup script that generates config
 RUN echo '#!/bin/sh' > /startup.sh && \
+	echo 'echo "DEBUG: Using WEBHOOK_BASE_URL = ${WEBHOOK_BASE_URL:-http://localhost:45459}"' >> /startup.sh && \
 	echo 'echo "window.WEBHOOK_BASE_URL = \"${WEBHOOK_BASE_URL:-http://localhost:45459}\";" > /site/config.js' >> /startup.sh && \
 	echo 'exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile' >> /startup.sh && \
 	chmod +x /startup.sh
