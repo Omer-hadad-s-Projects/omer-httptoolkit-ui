@@ -171,10 +171,26 @@ export class EventsStore {
 
         mockttpEventTypes.forEach(<T extends MockttpEventType>(eventName: T) => {
             this.proxyStore.onMockttpEvent(eventName, ((eventData: EventTypesMap[T]) => {
-                // Fire and forget the webhook call with error handling
-                this.socketSender.sendSocketMessage(JSON.stringify(eventData)).catch(error => {
-                    console.warn('Failed to send webhook message:', error);
-                });
+                // Only send webhook for key HTTP events to reduce noise
+                const webhookEnabledEvents: MockttpEventType[] = [
+                    'request',
+                    'response',
+                    'websocket-accepted',
+                    'abort',
+                    'client-error'
+                ];
+
+                if (webhookEnabledEvents.includes(eventName)) {
+                    // Fire and forget the webhook call with error handling
+                    this.socketSender.sendSocketMessage(JSON.stringify({
+                        type: eventName,
+                        event: eventData,
+                        timestamp: new Date().toISOString()
+                    })).catch(error => {
+                        console.warn('Failed to send webhook message:', error);
+                    });
+                }
+
                 if (this.isPaused) return;
                 this.eventQueue.push({ type: eventName, event: eventData } as any);
                 this.queueEventFlush();
