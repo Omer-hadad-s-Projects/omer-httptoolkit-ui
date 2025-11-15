@@ -1,10 +1,13 @@
 export class OmerWebhookUtility {
-    private baseUrl: string = process.env.WEBHOOK_BASE_URL || 'http://localhost:45459';
+    private baseUrl: string;
     private port: number;
 
     public constructor(port: number) {
         this.port = port;
-        console.log('Webhook utility initialized with base URL:', this.baseUrl);
+        // Resolve the baseUrl at construction time, not at class definition time
+        this.baseUrl = (window as any).WEBHOOK_BASE_URL || process.env.WEBHOOK_BASE_URL || 'http://localhost:45459';
+
+        console.log('Webhook utility using baseUrl:', this.baseUrl);
     }
 
     public async sendSocketMessage(jsonData: string) {
